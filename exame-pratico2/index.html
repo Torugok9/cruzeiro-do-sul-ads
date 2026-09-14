@@ -26,10 +26,19 @@
       </div>
     </header>
 
-    <nav>
-      <ul>
-        <li><a href="index.html">Início</a></li>
-        <li><a href="projetos.html">Projetos</a></li>
+    <nav aria-label="Navegação principal">
+      <input type="checkbox" id="menu-toggle" class="menu-toggle">
+      <label for="menu-toggle" class="menu-hamburguer" aria-label="Abrir e fechar menu">☰ Menu</label>
+      <ul class="menu">
+        <li><a href="index.html" aria-current="page">Início</a></li>
+        <li class="tem-submenu">
+          <a href="projetos.html">Projetos ▾</a>
+          <ul class="submenu">
+            <li><a href="projetos.html">Educação para Todos</a></li>
+            <li><a href="projetos.html">Clínica Solidária</a></li>
+            <li><a href="projetos.html">Capacitação Profissional</a></li>
+          </ul>
+        </li>
         <li><a href="cadastro.html">Cadastro</a></li>
       </ul>
     </nav>

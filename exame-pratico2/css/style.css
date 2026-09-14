@@ -1,3 +1,60 @@
+/* =========================================================
+   Conecta Solidária - Folha de estilos (Exame Prático 2)
+   CSS3 avançado: variáveis, responsividade e animações
+   ========================================================= */
+
+/* -------------------------------------------------
+   1. Design tokens (variáveis CSS / :root)
+   Centraliza cores, espaçamentos e tipografia para
+   garantir consistência e escalabilidade.
+-------------------------------------------------- */
+:root {
+  /* Cores da marca */
+  --cor-primaria: #667eea;
+  --cor-secundaria: #764ba2;
+  --gradiente-marca: linear-gradient(135deg, var(--cor-primaria) 0%, var(--cor-secundaria) 100%);
+
+  /* Cores de feedback (validação) */
+  --cor-sucesso: #2e7d32;
+  --cor-erro: #c62828;
+
+  /* Cores neutras */
+  --cor-texto: #333333;
+  --cor-fundo: #f9f9f9;
+  --cor-branco: #ffffff;
+  --cor-cinza-claro: #f0f0f0;
+  --cor-cinza-medio: #999999;
+  --cor-borda: #cccccc;
+  --cor-escura: #333333;
+
+  /* Tipografia */
+  --fonte-base: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+
+  /* Escala tipográfica (5 patamares) */
+  --fonte-sm: 0.875rem;  /* 14px - textos auxiliares */
+  --fonte-base-tam: 1rem;     /* 16px - corpo do texto */
+  --fonte-md: 1.1rem;    /* ~18px - subtítulos (h3) */
+  --fonte-lg: 2rem;      /* 32px - títulos de seção (h2) */
+  --fonte-xl: 2.5rem;    /* 40px - título principal (h1) */
+
+  /* Espaçamentos - escala modular (base 5px, dobrando) */
+  --espaco-xs: 5px;
+  --espaco-sm: 10px;
+  --espaco-md: 20px;
+  --espaco-lg: 40px;
+
+  /* Bordas e sombras */
+  --raio: 8px;
+  --sombra: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --sombra-hover: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+  /* Transições */
+  --transicao: 0.3s ease;
+}
+
+/* -------------------------------------------------
+   2. Reset e base
+-------------------------------------------------- */
 * {
   margin: 0;
   padding: 0;
@@ -5,87 +62,188 @@
 }
 
 body {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-family: var(--fonte-base);
+  font-size: var(--fonte-base-tam);
   line-height: 1.6;
-  color: #333;
-  background-color: #f9f9f9;
+  color: var(--cor-texto);
+  background-color: var(--cor-fundo);
 }
 
+/* -------------------------------------------------
+   3. Animações (@keyframes)
+-------------------------------------------------- */
+@keyframes surgir {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -------------------------------------------------
+   4. Cabeçalho
+-------------------------------------------------- */
 header {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
-  padding: 20px 0;
+  background: var(--gradiente-marca);
+  color: var(--cor-branco);
+  padding: var(--espaco-md) 0;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  /* Flexbox: centraliza título e tagline em coluna */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espaco-xs);
 }
 
 .container {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 0 20px;
+  padding: 0 var(--espaco-md);
 }
 
 h1 {
-  font-size: 2.5em;
-  margin-bottom: 10px;
+  font-size: var(--fonte-xl);
+  margin-bottom: var(--espaco-sm);
 }
 
 .tagline {
-  font-size: 1.1em;
+  font-size: var(--fonte-md);
   opacity: 0.9;
 }
 
+/* -------------------------------------------------
+   5. Navegação (menu responsivo com dropdown e hambúrguer)
+-------------------------------------------------- */
 nav {
   background-color: #555;
-  padding: 0;
+  position: relative;
 }
 
-nav ul {
+/* Menu principal em linha (desktop) */
+nav > ul.menu {
   list-style: none;
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
 }
 
-nav li {
-  margin: 0;
-}
-
 nav a {
   display: block;
-  padding: 15px 20px;
-  color: white;
+  padding: 15px var(--espaco-md);
+  color: var(--cor-branco);
   text-decoration: none;
-  transition: background-color 0.3s;
+  transition: background-color var(--transicao);
 }
 
-nav a:hover {
-  background-color: #667eea;
+nav a:hover,
+nav a:focus,
+nav a[aria-current="page"] {
+  background-color: var(--cor-primaria);
 }
 
+/* Checkbox e botão hambúrguer ficam ocultos no desktop */
+.menu-toggle {
+  display: none;
+}
+
+.menu-hamburguer {
+  display: none;
+  color: var(--cor-branco);
+  font-weight: 600;
+  padding: 15px var(--espaco-md);
+  cursor: pointer;
+  user-select: none;
+}
+
+/* Submenu (dropdown) - oculto por padrão */
+.tem-submenu {
+  position: relative;
+}
+
+.submenu {
+  list-style: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 220px;
+  background-color: #444;
+  box-shadow: var(--sombra);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: opacity var(--transicao), transform var(--transicao),
+    visibility var(--transicao);
+  z-index: 10;
+}
+
+/* Exibe o dropdown ao passar o mouse ou navegar por teclado */
+.tem-submenu:hover .submenu,
+.tem-submenu:focus-within .submenu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* -------------------------------------------------
+   6. Conteúdo principal
+-------------------------------------------------- */
 main {
-  padding: 40px 0;
+  padding: var(--espaco-lg) 0;
 }
 
-section {
-  background: white;
+/* Sistema de layout com Grid de 12 colunas.
+   Por padrão cada filho ocupa as 12 colunas (largura total);
+   classes utilitárias definem quantas colunas cada bloco ocupa. */
+.layout-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--espaco-md);
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: var(--espaco-lg) var(--espaco-md);
+}
+
+.layout-grid > * {
+  grid-column: 1 / -1; /* ocupa as 12 colunas por padrão */
+}
+
+.layout-grid > section {
+  grid-column: span 8; /* conteúdo principal: 8 de 12 colunas */
+}
+
+.layout-grid > aside {
+  grid-column: span 4; /* barra lateral: 4 de 12 colunas */
+}
+
+section,
+article,
+form {
+  background: var(--cor-branco);
   margin-bottom: 30px;
-  padding: 40px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  padding: var(--espaco-lg);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+  animation: surgir 0.5s ease both;
 }
 
 h2 {
-  color: #667eea;
-  margin-bottom: 20px;
-  font-size: 2em;
-  border-bottom: 3px solid #667eea;
-  padding-bottom: 10px;
+  color: var(--cor-primaria);
+  margin-bottom: var(--espaco-md);
+  font-size: var(--fonte-lg);
+  border-bottom: 3px solid var(--cor-primaria);
+  padding-bottom: var(--espaco-sm);
 }
 
 h3 {
-  color: #764ba2;
-  margin-top: 20px;
-  margin-bottom: 10px;
+  color: var(--cor-secundaria);
+  font-size: var(--fonte-md);
+  margin-top: var(--espaco-md);
+  margin-bottom: var(--espaco-sm);
 }
 
 p {
@@ -94,105 +252,100 @@ p {
 }
 
 ul {
-  margin-left: 20px;
+  margin-left: var(--espaco-md);
   margin-bottom: 15px;
 }
 
 li {
-  margin-bottom: 10px;
+  margin-bottom: var(--espaco-sm);
 }
 
+/* -------------------------------------------------
+   7. Botões e links de ação
+-------------------------------------------------- */
 .btn {
   display: inline-block;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--gradiente-marca);
+  color: var(--cor-branco);
   padding: 12px 30px;
   text-decoration: none;
   border-radius: 5px;
-  transition: transform 0.3s, box-shadow 0.3s;
-  margin: 10px 10px 10px 0;
+  transition: transform var(--transicao), box-shadow var(--transicao);
+  margin: var(--espaco-sm) var(--espaco-sm) var(--espaco-sm) 0;
 }
 
 .btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--sombra-hover);
 }
 
+/* -------------------------------------------------
+   8. Grade de projetos (CSS Grid)
+-------------------------------------------------- */
 .projetos-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 20px;
-  margin-top: 20px;
+  gap: var(--espaco-md);
+  margin-top: var(--espaco-md);
 }
 
 .projeto-card {
-  background: #f0f0f0;
-  padding: 20px;
-  border-radius: 8px;
-  border-left: 4px solid #667eea;
-  transition: transform 0.3s;
+  background: var(--cor-cinza-claro);
+  padding: var(--espaco-md);
+  border-radius: var(--raio);
+  border-left: 4px solid var(--cor-primaria);
+  transition: transform var(--transicao);
+  /* Flexbox: empilha o conteúdo do card e alinha em coluna,
+     garantindo cards com altura consistente */
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
 }
 
 .projeto-card:hover {
   transform: translateY(-5px);
 }
 
-.imagem-secao {
-  width: 100%;
-  height: auto;
-  border-radius: 8px;
-  margin-bottom: 20px;
-}
-
+/* -------------------------------------------------
+   9. Imagens responsivas
+-------------------------------------------------- */
+.imagem-secao,
 .imagem-card {
   width: 100%;
   height: auto;
-  border-radius: 8px;
+  border-radius: var(--raio);
   margin-bottom: 15px;
 }
 
 .texto-centralizado {
   text-align: center;
   margin-top: 30px;
+  /* Flexbox: distribui os botões de ação com espaçamento uniforme */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--espaco-sm);
 }
 
-footer {
-  background-color: #333;
-  color: white;
-  text-align: center;
-  padding: 30px 0;
-  margin-top: 40px;
-}
-
-footer a {
-  color: #667eea;
-  text-decoration: none;
-}
-
-footer a:hover {
-  text-decoration: underline;
-}
-
+/* -------------------------------------------------
+   10. Formulário
+-------------------------------------------------- */
 form {
-  background: white;
   max-width: 700px;
   margin: 0 auto;
-  padding: 30px;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 fieldset {
   border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 20px;
+  border-radius: var(--raio);
+  padding: var(--espaco-md);
   margin-bottom: 25px;
 }
 
 legend {
-  color: #667eea;
+  color: var(--cor-primaria);
   font-weight: bold;
-  padding: 0 10px;
+  padding: 0 var(--espaco-sm);
 }
 
 label {
@@ -203,11 +356,33 @@ input,
 select,
 textarea {
   width: 100%;
-  padding: 10px;
+  padding: var(--espaco-sm);
   margin-top: 5px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--cor-borda);
   border-radius: 5px;
   font-size: 1em;
+  transition: border-color var(--transicao), box-shadow var(--transicao);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25);
+}
+
+/* Feedback de SUCESSO: campo obrigatório preenchido corretamente */
+input:required:valid,
+select:required:valid {
+  border-color: var(--cor-sucesso);
+}
+
+/* Feedback de ERRO: campo obrigatório inválido (após interação) */
+input:required:invalid:not(:focus):not(:placeholder-shown),
+select:required:invalid:not(:focus) {
+  border-color: var(--cor-erro);
+  box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.15);
 }
 
 input[type="radio"],
@@ -217,29 +392,319 @@ input[type="checkbox"] {
 }
 
 button {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  background: var(--gradiente-marca);
+  color: var(--cor-branco);
   border: none;
   padding: 12px 30px;
   border-radius: 5px;
   cursor: pointer;
   font-size: 1em;
-  margin: 10px 10px 0 0;
+  margin: var(--espaco-sm) var(--espaco-sm) 0 0;
+  transition: transform var(--transicao), box-shadow var(--transicao),
+    opacity var(--transicao);
+}
+
+/* Estado hover: elevar e destacar */
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sombra-hover);
+}
+
+/* Estado focus: anel de foco visível (acessibilidade) */
+button:focus-visible {
+  outline: 3px solid var(--cor-secundaria);
+  outline-offset: 2px;
+}
+
+/* Estado active: botão "pressionado" */
+button:active {
+  transform: translateY(1px);
+  box-shadow: var(--sombra);
+}
+
+/* Estado disabled: botão inativo */
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
 }
 
 button[type="reset"] {
-  background: #999;
+  background: var(--cor-cinza-medio);
 }
 
+/* -------------------------------------------------
+   11. Aside e address
+-------------------------------------------------- */
 aside {
-  background: #f0f0f0;
-  border-left: 4px solid #667eea;
-  padding: 20px;
-  border-radius: 8px;
-  margin-top: 20px;
+  background: var(--cor-cinza-claro);
+  border-left: 4px solid var(--cor-primaria);
+  padding: var(--espaco-md);
+  border-radius: var(--raio);
+  margin-top: var(--espaco-md);
 }
 
 address {
   font-style: normal;
   line-height: 1.8;
+}
+
+/* -------------------------------------------------
+   12. Rodapé
+-------------------------------------------------- */
+footer {
+  background-color: var(--cor-escura);
+  color: var(--cor-branco);
+  text-align: center;
+  font-size: var(--fonte-sm);
+  padding: 30px 0;
+  margin-top: var(--espaco-lg);
+}
+
+footer a {
+  color: var(--cor-primaria);
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* -------------------------------------------------
+   13. Acessibilidade: foco visível por teclado
+-------------------------------------------------- */
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--cor-secundaria);
+  outline-offset: 2px;
+}
+
+/* -------------------------------------------------
+   13b. Componentes de feedback (badges, alertas, modal, toast)
+   Grupo de estilos padronizado com a paleta do projeto.
+-------------------------------------------------- */
+
+/* --- BADGES (etiquetas de categoria) --- */
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: var(--fonte-sm);
+  font-weight: 600;
+  color: var(--cor-branco);
+  background: var(--cor-primaria);
+}
+
+.badge--secundario {
+  background: var(--cor-secundaria);
+}
+
+.badge--sucesso {
+  background: var(--cor-sucesso);
+}
+
+.badge--erro {
+  background: var(--cor-erro);
+}
+
+.badge--neutro {
+  background: var(--cor-cinza-medio);
+}
+
+/* --- ALERTAS (caixas de aviso contextuais) --- */
+.alerta {
+  padding: var(--espaco-md);
+  border-radius: var(--raio);
+  border-left: 5px solid;
+  margin-bottom: var(--espaco-md);
+  background: var(--cor-cinza-claro);
+}
+
+.alerta--sucesso {
+  border-color: var(--cor-sucesso);
+  background: #e8f5e9;
+  color: #1b5e20;
+}
+
+.alerta--erro {
+  border-color: var(--cor-erro);
+  background: #fdecea;
+  color: #b71c1c;
+}
+
+.alerta--aviso {
+  border-color: #f9a825;
+  background: #fff8e1;
+  color: #8d6e00;
+}
+
+.alerta--info {
+  border-color: var(--cor-primaria);
+  background: #eef1fe;
+  color: #2a3a8c;
+}
+
+/* --- MODAL (janela de informação) - CSS puro via :target --- */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transicao), visibility var(--transicao);
+  z-index: 100;
+}
+
+.modal:target {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal__caixa {
+  background: var(--cor-branco);
+  padding: var(--espaco-lg);
+  border-radius: var(--raio);
+  max-width: 480px;
+  width: 90%;
+  box-shadow: var(--sombra-hover);
+  transform: translateY(-20px);
+  transition: transform var(--transicao);
+}
+
+.modal:target .modal__caixa {
+  transform: translateY(0);
+}
+
+.modal__fechar {
+  float: right;
+  color: var(--cor-texto);
+  text-decoration: none;
+  font-size: var(--fonte-md);
+  font-weight: bold;
+}
+
+/* --- TOAST (notificação não obstrutiva) --- */
+.toast {
+  position: fixed;
+  bottom: var(--espaco-md);
+  right: var(--espaco-md);
+  background: var(--cor-escura);
+  color: var(--cor-branco);
+  padding: var(--espaco-sm) var(--espaco-md);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra-hover);
+  border-left: 5px solid var(--cor-sucesso);
+  animation: surgir 0.5s ease both;
+  z-index: 90;
+}
+
+/* -------------------------------------------------
+   14. Responsividade (Media Queries) - 5 breakpoints
+-------------------------------------------------- */
+
+/* Breakpoint 1 - Desktop panorâmico (<= 1200px) */
+@media (max-width: 1200px) {
+  .container,
+  .layout-grid {
+    max-width: 960px;
+  }
+}
+
+/* Breakpoint 2 - Laptops / desktops menores (<= 992px)
+   O grid de 12 colunas passa a empilhar conteúdo e barra lateral. */
+@media (max-width: 992px) {
+  .layout-grid > section,
+  .layout-grid > aside {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Breakpoint 3 - Tablets (<= 768px): ativa o menu hambúrguer */
+@media (max-width: 768px) {
+  h1 {
+    font-size: var(--fonte-lg);
+  }
+
+  section,
+  article,
+  form {
+    padding: var(--espaco-md);
+  }
+
+  /* Mostra o botão hambúrguer */
+  .menu-hamburguer {
+    display: block;
+    text-align: right;
+  }
+
+  /* Esconde o menu e o abre com animação ao marcar o checkbox */
+  nav > ul.menu {
+    flex-direction: column;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height var(--transicao);
+  }
+
+  .menu-toggle:checked ~ ul.menu {
+    max-height: 600px;
+  }
+
+  nav a {
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* No mobile o submenu fica empilhado, sem posicionamento absoluto */
+  .submenu {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    background-color: #666;
+  }
+}
+
+/* Breakpoint 4 - Celulares grandes (<= 576px) */
+@media (max-width: 576px) {
+  .projetos-grid {
+    grid-template-columns: 1fr; /* cards em coluna única */
+  }
+
+  p {
+    text-align: left;
+  }
+}
+
+/* Breakpoint 5 - Celulares pequenos (<= 480px) */
+@media (max-width: 480px) {
+  h1 {
+    font-size: var(--fonte-md);
+  }
+
+  main,
+  .layout-grid {
+    padding: var(--espaco-md) 0;
+  }
+
+  .btn,
+  button {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin: var(--espaco-sm) 0;
+  }
+}
+
+/* -------------------------------------------------
+   15. Respeita usuários que preferem menos movimento
+-------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
 }

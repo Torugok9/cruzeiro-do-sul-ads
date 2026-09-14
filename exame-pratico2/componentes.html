@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta
+      name="description"
+      content="Guia de componentes de interface (UI kit) da Conecta Solidária: badges, alertas, modais e toasts."
+>
+    <title>Componentes | Conecta Solidária</title>
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+
+  <body>
+    <header>
+      <h1>🤝 Conecta Solidária</h1>
+      <p class="tagline">Guia de componentes da plataforma (UI Kit)</p>
+    </header>
+
+    <nav aria-label="Navegação principal">
+      <input type="checkbox" id="menu-toggle" class="menu-toggle">
+      <label for="menu-toggle" class="menu-hamburguer" aria-label="Abrir e fechar menu">☰ Menu</label>
+      <ul class="menu">
+        <li><a href="index.html">Início</a></li>
+        <li class="tem-submenu">
+          <a href="projetos.html">Projetos ▾</a>
+          <ul class="submenu">
+            <li><a href="projetos.html">Educação para Todos</a></li>
+            <li><a href="projetos.html">Clínica Solidária</a></li>
+            <li><a href="projetos.html">Capacitação Profissional</a></li>
+          </ul>
+        </li>
+        <li><a href="cadastro.html">Cadastro</a></li>
+        <li><a href="componentes.html" aria-current="page">Componentes</a></li>
+      </ul>
+    </nav>
+
+    <main>
+      <div class="container">
+        <section id="badges">
+          <h2>Badges (etiquetas de categoria)</h2>
+          <p>Usados para categorizar semanticamente projetos e status:</p>
+          <p>
+            <span class="badge">Educação</span>
+            <span class="badge badge--secundario">Saúde</span>
+            <span class="badge badge--sucesso">Ativo</span>
+            <span class="badge badge--erro">Encerrado</span>
+            <span class="badge badge--neutro">Rascunho</span>
+          </p>
+        </section>
+
+        <section id="alertas">
+          <h2>Alertas contextuais</h2>
+          <p>Caixas de aviso para comunicar o resultado de uma ação:</p>
+
+          <div class="alerta alerta--sucesso">
+            <strong>Sucesso!</strong> Seu cadastro de voluntário foi enviado.
+          </div>
+          <div class="alerta alerta--erro">
+            <strong>Erro!</strong> Verifique os campos obrigatórios do formulário.
+          </div>
+          <div class="alerta alerta--aviso">
+            <strong>Atenção!</strong> Sua doação está sendo processada.
+          </div>
+          <div class="alerta alerta--info">
+            <strong>Informação:</strong> Novos projetos serão divulgados em breve.
+          </div>
+        </section>
+
+        <section id="modal-demo">
+          <h2>Modal de informação</h2>
+          <p>Janela sobreposta para informações ou confirmações:</p>
+          <p>
+            <a href="#modal-doacao" class="btn">Fazer uma doação</a>
+          </p>
+        </section>
+
+        <section id="toast-demo">
+          <h2>Toast (notificação não obstrutiva)</h2>
+          <p>
+            Notificação discreta exibida no canto inferior da tela (veja o
+            exemplo fixo no canto inferior direito).
+          </p>
+        </section>
+      </div>
+    </main>
+
+    <!-- Modal (aberto via :target no CSS) -->
+    <div class="modal" id="modal-doacao" role="dialog" aria-modal="true" aria-labelledby="modal-titulo">
+      <div class="modal__caixa">
+        <a href="#modal-demo" class="modal__fechar" aria-label="Fechar modal">✕</a>
+        <h3 id="modal-titulo">💜 Obrigado por ajudar!</h3>
+        <p>
+          Sua doação transforma vidas em nossas comunidades parceiras.
+          Escolha um valor e faça parte dessa mudança.
+        </p>
+        <a href="#modal-demo" class="btn">Confirmar doação</a>
+      </div>
+    </div>
+
+    <!-- Toast de exemplo -->
+    <div class="toast" role="status">
+      ✅ Cadastro salvo com sucesso!
+    </div>
+
+    <footer>
+      <p>
+        <strong>Conecta Solidária</strong> ·
+        <a href="mailto:contato@conectasolidaria.org">contato@conectasolidaria.org</a>
+      </p>
+      <p>&copy; 2024 Conecta Solidária.</p>
+    </footer>
+  </body>
+</html>
