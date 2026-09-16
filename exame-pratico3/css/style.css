@@ -1,0 +1,1101 @@
+/* =========================================================
+   Conecta Solidária - Folha de estilos (Exame Prático 2)
+   CSS3 avançado: variáveis, responsividade e animações
+   ========================================================= */
+
+/* -------------------------------------------------
+   1. Design tokens (variáveis CSS / :root)
+   Centraliza cores, espaçamentos e tipografia para
+   garantir consistência e escalabilidade.
+-------------------------------------------------- */
+:root {
+  /* Cores da marca */
+  --cor-primaria: #667eea;
+  --cor-secundaria: #764ba2;
+  --gradiente-marca: linear-gradient(135deg, var(--cor-primaria) 0%, var(--cor-secundaria) 100%);
+
+  /* Cores de feedback (validação) */
+  --cor-sucesso: #2e7d32;
+  --cor-erro: #c62828;
+
+  /* Cores neutras */
+  --cor-texto: #333333;
+  --cor-fundo: #f9f9f9;
+  --cor-branco: #ffffff;
+  --cor-cinza-claro: #f0f0f0;
+  --cor-cinza-medio: #999999;
+  --cor-borda: #cccccc;
+  --cor-escura: #333333;
+
+  /* Tipografia */
+  --fonte-base: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+
+  /* Escala tipográfica (5 patamares) */
+  --fonte-sm: 0.875rem;  /* 14px - textos auxiliares */
+  --fonte-base-tam: 1rem;     /* 16px - corpo do texto */
+  --fonte-md: 1.1rem;    /* ~18px - subtítulos (h3) */
+  --fonte-lg: 2rem;      /* 32px - títulos de seção (h2) */
+  --fonte-xl: 2.5rem;    /* 40px - título principal (h1) */
+
+  /* Espaçamentos - escala modular (base 5px, dobrando) */
+  --espaco-xs: 5px;
+  --espaco-sm: 10px;
+  --espaco-md: 20px;
+  --espaco-lg: 40px;
+
+  /* Bordas e sombras */
+  --raio: 8px;
+  --sombra: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --sombra-hover: 0 4px 8px rgba(0, 0, 0, 0.2);
+
+  /* Transições */
+  --transicao: 0.3s ease;
+}
+
+/* -------------------------------------------------
+   2. Reset e base
+-------------------------------------------------- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--fonte-base);
+  font-size: var(--fonte-base-tam);
+  line-height: 1.6;
+  color: var(--cor-texto);
+  background-color: var(--cor-fundo);
+}
+
+/* -------------------------------------------------
+   3. Animações (@keyframes)
+-------------------------------------------------- */
+@keyframes surgir {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* -------------------------------------------------
+   4. Cabeçalho
+-------------------------------------------------- */
+/* Só o cabeçalho principal da página recebe o gradiente.
+   Sem o "body >", qualquer <header> interno (como o topo do
+   card de voluntário) herdaria o fundo roxo. */
+body > header {
+  background: var(--gradiente-marca);
+  color: var(--cor-branco);
+  padding: var(--espaco-md) 0;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  /* Flexbox: centraliza título e tagline em coluna */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espaco-xs);
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--espaco-md);
+}
+
+h1 {
+  font-size: var(--fonte-xl);
+  margin-bottom: var(--espaco-sm);
+}
+
+.tagline {
+  font-size: var(--fonte-md);
+  opacity: 0.9;
+  text-align: center; /* a regra global de <p> usa justify */
+}
+
+/* -------------------------------------------------
+   5. Navegação (menu responsivo com dropdown e hambúrguer)
+-------------------------------------------------- */
+nav {
+  background-color: #555;
+  position: relative;
+}
+
+/* Menu principal em linha (desktop) */
+nav > ul.menu {
+  list-style: none;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+nav a {
+  display: block;
+  padding: 15px var(--espaco-md);
+  color: var(--cor-branco);
+  text-decoration: none;
+  transition: background-color var(--transicao);
+}
+
+nav a:hover,
+nav a:focus,
+nav a[aria-current="page"] {
+  background-color: var(--cor-primaria);
+}
+
+/* Botão hambúrguer: some no desktop e é controlado por JS
+   (no Exame 2 era um checkbox escondido, que não recebia foco). */
+.menu-hamburguer {
+  display: none;
+  background: none;
+  border: none;
+  border-radius: 0;
+  color: var(--cor-branco);
+  font-family: inherit;
+  font-size: var(--fonte-base-tam);
+  font-weight: 600;
+  padding: 15px var(--espaco-md);
+  margin: 0;
+  cursor: pointer;
+}
+
+.menu-hamburguer:hover {
+  background: rgba(255, 255, 255, 0.12);
+  transform: none;
+  box-shadow: none;
+}
+
+/* Submenu (dropdown) - oculto por padrão */
+.tem-submenu {
+  position: relative;
+}
+
+.submenu {
+  list-style: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  min-width: 220px;
+  background-color: #444;
+  box-shadow: var(--sombra);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: opacity var(--transicao), transform var(--transicao),
+    visibility var(--transicao);
+  z-index: 10;
+}
+
+/* Exibe o dropdown ao passar o mouse ou navegar por teclado */
+.tem-submenu:hover .submenu,
+.tem-submenu:focus-within .submenu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+/* -------------------------------------------------
+   6. Conteúdo principal
+-------------------------------------------------- */
+main {
+  padding: var(--espaco-lg) 0;
+}
+
+/* Sistema de layout com Grid de 12 colunas.
+   Por padrão cada filho ocupa as 12 colunas (largura total);
+   classes utilitárias definem quantas colunas cada bloco ocupa. */
+.layout-grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: var(--espaco-md);
+  align-items: start;
+}
+
+.layout-grid > * {
+  grid-column: 1 / -1; /* ocupa as 12 colunas por padrão */
+}
+
+.layout-grid > section {
+  grid-column: span 8; /* conteúdo principal: 8 de 12 colunas */
+}
+
+.layout-grid > aside {
+  grid-column: span 4; /* barra lateral: 4 de 12 colunas */
+}
+
+section,
+article,
+form {
+  background: var(--cor-branco);
+  margin-bottom: 30px;
+  padding: var(--espaco-lg);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra);
+}
+
+/* A tela inteira já anima na troca de rota (.view--visivel);
+   aqui a animação serve para os cards criados por JavaScript,
+   como os projetos filtrados e os voluntários da lista. */
+article {
+  animation: surgir 0.4s ease both;
+}
+
+h2 {
+  color: var(--cor-primaria);
+  margin-bottom: var(--espaco-md);
+  font-size: var(--fonte-lg);
+  border-bottom: 3px solid var(--cor-primaria);
+  padding-bottom: var(--espaco-sm);
+}
+
+h3 {
+  color: var(--cor-secundaria);
+  font-size: var(--fonte-md);
+  margin-top: var(--espaco-md);
+  margin-bottom: var(--espaco-sm);
+}
+
+p {
+  margin-bottom: 15px;
+  text-align: justify;
+}
+
+ul {
+  margin-left: var(--espaco-md);
+  margin-bottom: 15px;
+}
+
+li {
+  margin-bottom: var(--espaco-sm);
+}
+
+/* -------------------------------------------------
+   7. Botões e links de ação
+-------------------------------------------------- */
+.btn {
+  display: inline-block;
+  background: var(--gradiente-marca);
+  color: var(--cor-branco);
+  padding: 12px 30px;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: transform var(--transicao), box-shadow var(--transicao);
+  margin: var(--espaco-sm) var(--espaco-sm) var(--espaco-sm) 0;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sombra-hover);
+}
+
+/* -------------------------------------------------
+   8. Grade de projetos (CSS Grid)
+-------------------------------------------------- */
+.projetos-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--espaco-md);
+  margin-top: var(--espaco-md);
+}
+
+.projeto-card {
+  background: var(--cor-cinza-claro);
+  padding: var(--espaco-md);
+  border-radius: var(--raio);
+  border-left: 4px solid var(--cor-primaria);
+  transition: transform var(--transicao);
+  /* Flexbox: empilha o conteúdo do card e alinha em coluna,
+     garantindo cards com altura consistente */
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+}
+
+.projeto-card:hover {
+  transform: translateY(-5px);
+}
+
+/* Sem isso o badge esticaria na largura toda do card flex. */
+.projeto-card > .badge {
+  align-self: flex-start;
+}
+
+/* -------------------------------------------------
+   9. Imagens responsivas
+-------------------------------------------------- */
+.imagem-secao,
+.imagem-card {
+  width: 100%;
+  height: auto;
+  border-radius: var(--raio);
+  margin-bottom: 15px;
+}
+
+.texto-centralizado {
+  text-align: center;
+  margin-top: 30px;
+  /* Flexbox: distribui os botões de ação com espaçamento uniforme */
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--espaco-sm);
+}
+
+/* -------------------------------------------------
+   10. Formulário
+-------------------------------------------------- */
+form {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+fieldset {
+  border: 1px solid #ddd;
+  border-radius: var(--raio);
+  padding: var(--espaco-md);
+  margin-bottom: 25px;
+}
+
+legend {
+  color: var(--cor-primaria);
+  font-weight: bold;
+  padding: 0 var(--espaco-sm);
+}
+
+label {
+  font-weight: 600;
+}
+
+input,
+select,
+textarea {
+  width: 100%;
+  padding: var(--espaco-sm);
+  margin-top: 5px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 5px;
+  font-size: 1em;
+  transition: border-color var(--transicao), box-shadow var(--transicao);
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--cor-primaria);
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.25);
+}
+
+/* O feedback de válido/inválido agora vem das classes
+   .campo--ok e .campo--erro, aplicadas pelo JavaScript depois
+   que o usuário interage com o campo (ver seção 18). */
+
+input[type="radio"],
+input[type="checkbox"] {
+  width: auto;
+  margin-right: 6px;
+}
+
+button {
+  background: var(--gradiente-marca);
+  color: var(--cor-branco);
+  border: none;
+  padding: 12px 30px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1em;
+  margin: var(--espaco-sm) var(--espaco-sm) 0 0;
+  transition: transform var(--transicao), box-shadow var(--transicao),
+    opacity var(--transicao);
+}
+
+/* Estado hover: elevar e destacar */
+button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--sombra-hover);
+}
+
+/* Estado focus: anel de foco visível (acessibilidade) */
+button:focus-visible {
+  outline: 3px solid var(--cor-secundaria);
+  outline-offset: 2px;
+}
+
+/* Estado active: botão "pressionado" */
+button:active {
+  transform: translateY(1px);
+  box-shadow: var(--sombra);
+}
+
+/* Estado disabled: botão inativo */
+button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+button[type="reset"] {
+  background: var(--cor-cinza-medio);
+}
+
+/* -------------------------------------------------
+   11. Aside e address
+-------------------------------------------------- */
+aside {
+  background: var(--cor-cinza-claro);
+  border-left: 4px solid var(--cor-primaria);
+  padding: var(--espaco-md);
+  border-radius: var(--raio);
+  margin-top: var(--espaco-md);
+}
+
+address {
+  font-style: normal;
+  line-height: 1.8;
+}
+
+/* -------------------------------------------------
+   12. Rodapé
+-------------------------------------------------- */
+footer {
+  background-color: var(--cor-escura);
+  color: var(--cor-branco);
+  text-align: center;
+  font-size: var(--fonte-sm);
+  padding: 30px 0;
+  margin-top: var(--espaco-lg);
+}
+
+footer a {
+  color: var(--cor-primaria);
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+/* -------------------------------------------------
+   13. Acessibilidade: foco visível por teclado
+-------------------------------------------------- */
+a:focus-visible,
+button:focus-visible {
+  outline: 3px solid var(--cor-secundaria);
+  outline-offset: 2px;
+}
+
+/* -------------------------------------------------
+   13b. Componentes de feedback (badges, alertas, modal, toast)
+   Grupo de estilos padronizado com a paleta do projeto.
+-------------------------------------------------- */
+
+/* --- BADGES (etiquetas de categoria) --- */
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: var(--fonte-sm);
+  font-weight: 600;
+  color: var(--cor-branco);
+  background: var(--cor-primaria);
+}
+
+.badge--secundario {
+  background: var(--cor-secundaria);
+}
+
+.badge--sucesso {
+  background: var(--cor-sucesso);
+}
+
+.badge--erro {
+  background: var(--cor-erro);
+}
+
+.badge--neutro {
+  background: var(--cor-cinza-medio);
+}
+
+/* --- ALERTAS (caixas de aviso contextuais) --- */
+.alerta {
+  padding: var(--espaco-md);
+  border-radius: var(--raio);
+  border-left: 5px solid;
+  margin-bottom: var(--espaco-md);
+  background: var(--cor-cinza-claro);
+}
+
+.alerta--sucesso {
+  border-color: var(--cor-sucesso);
+  background: #e8f5e9;
+  color: #1b5e20;
+}
+
+.alerta--erro {
+  border-color: var(--cor-erro);
+  background: #fdecea;
+  color: #b71c1c;
+}
+
+.alerta--aviso {
+  border-color: #f9a825;
+  background: #fff8e1;
+  color: #8d6e00;
+}
+
+.alerta--info {
+  border-color: var(--cor-primaria);
+  background: #eef1fe;
+  color: #2a3a8c;
+}
+
+/* --- MODAL (janela de confirmação) - aberto por JavaScript --- */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--transicao), visibility var(--transicao);
+  z-index: 100;
+}
+
+.modal--aberto {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal__caixa {
+  background: var(--cor-branco);
+  padding: var(--espaco-lg);
+  border-radius: var(--raio);
+  max-width: 480px;
+  width: 90%;
+  box-shadow: var(--sombra-hover);
+  transform: translateY(-20px);
+  transition: transform var(--transicao);
+}
+
+.modal--aberto .modal__caixa {
+  transform: translateY(0);
+}
+
+.modal__fechar {
+  float: right;
+  background: none;
+  border: none;
+  color: var(--cor-texto);
+  font-size: var(--fonte-md);
+  font-weight: bold;
+  line-height: 1;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.modal__fechar:hover {
+  background: none;
+  transform: none;
+  box-shadow: none;
+  color: var(--cor-erro);
+}
+
+.modal__acoes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-sm);
+  margin-top: var(--espaco-md);
+}
+
+/* --- TOAST (notificação não obstrutiva) ---
+   Os toasts são criados por JavaScript dentro de #regiao-toasts,
+   que empilha as mensagens no canto inferior direito. */
+.toasts {
+  position: fixed;
+  bottom: var(--espaco-md);
+  right: var(--espaco-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+  max-width: min(360px, calc(100vw - 2 * var(--espaco-md)));
+  z-index: 90;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: var(--espaco-sm);
+  background: var(--cor-escura);
+  color: var(--cor-branco);
+  padding: var(--espaco-sm) var(--espaco-md);
+  border-radius: var(--raio);
+  box-shadow: var(--sombra-hover);
+  border-left: 5px solid var(--cor-primaria);
+  /* Estado inicial: fora da tela; a classe --visivel anima a entrada */
+  opacity: 0;
+  transform: translateX(20px);
+  transition: opacity var(--transicao), transform var(--transicao);
+}
+
+.toast--visivel {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.toast--sucesso { border-left-color: var(--cor-sucesso); }
+.toast--erro { border-left-color: var(--cor-erro); }
+.toast--aviso { border-left-color: #f9a825; }
+.toast--info { border-left-color: var(--cor-primaria); }
+
+.toast__texto {
+  flex: 1;
+}
+
+.toast__fechar {
+  background: none;
+  border: none;
+  color: var(--cor-branco);
+  cursor: pointer;
+  font-size: var(--fonte-sm);
+  padding: 0;
+  margin: 0;
+}
+
+.toast__fechar:hover {
+  background: none;
+  transform: none;
+  box-shadow: none;
+  opacity: 0.7;
+}
+
+/* =========================================================
+   Exame Prático 3 - estilos das telas dinâmicas (SPA)
+   ========================================================= */
+
+/* -------------------------------------------------
+   13c. Estrutura da SPA
+-------------------------------------------------- */
+
+/* Atalho para pular o menu, visível apenas ao focar. */
+.pular-conteudo {
+  position: absolute;
+  left: -9999px;
+  top: 0;
+  background: var(--cor-branco);
+  color: var(--cor-primaria);
+  padding: var(--espaco-sm) var(--espaco-md);
+  z-index: 200;
+}
+
+.pular-conteudo:focus {
+  left: var(--espaco-sm);
+  top: var(--espaco-sm);
+}
+
+/* Transição entre as telas: o router cria um elemento .view
+   novo a cada rota e só então aplica a classe, reiniciando a
+   animação de entrada. */
+.view--visivel {
+  animation: surgir 0.3s ease both;
+}
+
+/* -------------------------------------------------
+   13d. Estatísticas, filtros e contadores
+-------------------------------------------------- */
+.estatisticas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-md);
+  margin: var(--espaco-md) 0;
+}
+
+.estatistica {
+  flex: 1 1 140px;
+  background: var(--cor-cinza-claro);
+  border-left: 4px solid var(--cor-primaria);
+  border-radius: var(--raio);
+  padding: var(--espaco-sm) var(--espaco-md);
+  text-align: center;
+}
+
+.estatistica__numero {
+  display: block;
+  color: var(--cor-secundaria);
+  font-size: var(--fonte-md);
+}
+
+.estatistica__rotulo {
+  font-size: var(--fonte-sm);
+}
+
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--espaco-md);
+  margin: var(--espaco-md) 0;
+}
+
+.filtros__grupo {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-sm);
+}
+
+.filtro {
+  background: transparent;
+  color: var(--cor-primaria);
+  border: 2px solid var(--cor-primaria);
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: var(--fonte-sm);
+  margin: 0;
+}
+
+.filtro--ativo {
+  background: var(--gradiente-marca);
+  color: var(--cor-branco);
+}
+
+.contador {
+  color: #666;
+  font-size: var(--fonte-sm);
+  text-align: left;
+  margin-bottom: var(--espaco-sm);
+}
+
+.barra-lista {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-sm);
+}
+
+.amostra {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espaco-sm);
+}
+
+.migalhas {
+  font-size: var(--fonte-sm);
+  margin-bottom: var(--espaco-sm);
+}
+
+.migalhas a,
+.link-acao {
+  color: var(--cor-primaria);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.migalhas a:hover,
+.link-acao:hover {
+  text-decoration: underline;
+}
+
+.projeto-card__link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.projeto-card .link-acao {
+  margin-top: auto; /* mantém o link no rodapé do card */
+}
+
+/* -------------------------------------------------
+   13e. Campos de formulário com feedback de validação
+-------------------------------------------------- */
+.campo {
+  margin-bottom: var(--espaco-md);
+}
+
+.campo label,
+.rotulo-grupo {
+  display: block;
+  font-weight: 600;
+}
+
+.campo--busca {
+  flex: 1 1 240px;
+  margin-bottom: 0;
+}
+
+.campo__ajuda {
+  color: #666;
+  font-size: var(--fonte-sm);
+  margin: var(--espaco-xs) 0 0;
+  text-align: left;
+}
+
+.campo__erro {
+  color: var(--cor-erro);
+  font-size: var(--fonte-sm);
+  font-weight: 600;
+  margin: var(--espaco-xs) 0 0;
+  text-align: left;
+}
+
+/* Sem mensagem, o parágrafo não ocupa espaço. */
+.campo__erro:empty {
+  display: none;
+}
+
+.campo--erro input,
+.campo--erro select,
+.campo--erro textarea {
+  border-color: var(--cor-erro);
+  box-shadow: 0 0 0 3px rgba(198, 40, 40, 0.15);
+}
+
+.campo--ok input,
+.campo--ok select,
+.campo--ok textarea {
+  border-color: var(--cor-sucesso);
+}
+
+.opcoes {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-xs);
+  margin: var(--espaco-xs) 0;
+}
+
+.opcao {
+  font-weight: 400;
+}
+
+.acoes-formulario {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-sm);
+}
+
+.lista-erros {
+  margin: var(--espaco-sm) 0 0 var(--espaco-md);
+}
+
+.link-erro {
+  background: none;
+  border: none;
+  color: inherit;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: underline;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.link-erro:hover {
+  background: none;
+  transform: none;
+  box-shadow: none;
+}
+
+/* -------------------------------------------------
+   13f. Botões auxiliares
+-------------------------------------------------- */
+.botao-secundario {
+  background: transparent;
+  color: var(--cor-primaria);
+  border: 2px solid var(--cor-primaria);
+}
+
+.botao-remover {
+  background: var(--cor-erro);
+}
+
+/* -------------------------------------------------
+   13g. Lista de voluntários (dados do localStorage)
+-------------------------------------------------- */
+.voluntarios-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--espaco-md);
+  margin-top: var(--espaco-md);
+}
+
+.voluntario {
+  padding: var(--espaco-md);
+  margin-bottom: 0;
+  border-left: 4px solid var(--cor-secundaria);
+  display: flex;
+  flex-direction: column;
+  gap: var(--espaco-sm);
+}
+
+.voluntario__topo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espaco-sm);
+}
+
+.voluntario__nome {
+  margin: 0;
+  font-size: var(--fonte-md);
+}
+
+.voluntario__dados {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--espaco-xs) var(--espaco-sm);
+  font-size: var(--fonte-sm);
+  margin: 0;
+}
+
+.voluntario__dados dt {
+  font-weight: 600;
+  color: #666;
+}
+
+.voluntario__dados dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.voluntario .botao-remover {
+  margin: var(--espaco-xs) 0 0;
+  align-self: flex-start;
+  font-size: var(--fonte-sm);
+  padding: var(--espaco-xs) var(--espaco-md);
+}
+
+/* -------------------------------------------------
+   13h. Badges por área de atuação
+-------------------------------------------------- */
+.badge--educacao { background: #3949ab; }
+.badge--saude { background: #ad1457; }
+.badge--renda { background: #00695c; }
+.badge--meio-ambiente { background: #2e7d32; }
+
+.alerta .btn,
+.alerta button {
+  margin-bottom: 0;
+}
+
+/* -------------------------------------------------
+   14. Responsividade (Media Queries) - 5 breakpoints
+-------------------------------------------------- */
+
+/* Breakpoint 1 - Desktop panorâmico (<= 1200px) */
+@media (max-width: 1200px) {
+  .container,
+  .layout-grid {
+    max-width: 960px;
+  }
+}
+
+/* Breakpoint 2 - Laptops / desktops menores (<= 992px)
+   O grid de 12 colunas passa a empilhar conteúdo e barra lateral. */
+@media (max-width: 992px) {
+  .layout-grid > section,
+  .layout-grid > aside {
+    grid-column: 1 / -1;
+  }
+}
+
+/* Breakpoint 3 - Tablets (<= 768px): ativa o menu hambúrguer */
+@media (max-width: 768px) {
+  h1 {
+    font-size: var(--fonte-lg);
+  }
+
+  section,
+  article,
+  form {
+    padding: var(--espaco-md);
+  }
+
+  /* Mostra o botão hambúrguer */
+  .menu-hamburguer {
+    display: block;
+    text-align: right;
+  }
+
+  /* Esconde o menu e o abre com animação ao marcar o checkbox */
+  nav > ul.menu {
+    flex-direction: column;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height var(--transicao);
+  }
+
+  /* Classe aplicada pelo módulo js/ui/menu.js */
+  nav > ul.menu--aberto {
+    max-height: 600px;
+  }
+
+  nav a {
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  /* No mobile o submenu fica empilhado, sem posicionamento absoluto */
+  .submenu {
+    position: static;
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    background-color: #666;
+  }
+}
+
+/* Breakpoint 4 - Celulares grandes (<= 576px) */
+@media (max-width: 576px) {
+  .projetos-grid {
+    grid-template-columns: 1fr; /* cards em coluna única */
+  }
+
+  p {
+    text-align: left;
+  }
+}
+
+/* Breakpoint 5 - Celulares pequenos (<= 480px) */
+@media (max-width: 480px) {
+  h1 {
+    font-size: var(--fonte-md);
+  }
+
+  main {
+    padding: var(--espaco-md) 0;
+  }
+
+  /* Botões de ação ocupam a linha inteira; os botões pequenos
+     (filtros, fechar toast/modal) continuam no tamanho normal. */
+  .btn,
+  .acoes-formulario button,
+  .modal__acoes button,
+  .barra-lista .botao-remover {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin: var(--espaco-sm) 0;
+  }
+}
+
+/* -------------------------------------------------
+   15. Respeita usuários que preferem menos movimento
+-------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation: none !important;
+    transition: none !important;
+  }
+}

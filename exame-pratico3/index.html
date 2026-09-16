@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Conecta Solidária - Sua ONG de Impacto Social</title>
+    <meta
+      name="description"
+      content="Conecta Solidária é uma ONG dedicada a projetos de impacto social, capacitação de voluntários e captação de doações para comunidades carentes."
+    >
+    <meta
+      name="keywords"
+      content="ONG, voluntariado, doações, impacto social, projetos solidários"
+    >
+    <link rel="stylesheet" href="css/style.css">
+  </head>
+
+  <body>
+    <!-- Casca da SPA: cabeçalho, menu e rodapé não são recarregados.
+         Apenas o conteúdo de #app muda a cada rota. -->
+    <a class="pular-conteudo" href="#conteudo">Pular para o conteúdo</a>
+
+    <header>
+      <div class="container">
+        <h1>🤝 Conecta Solidária</h1>
+        <p class="tagline">
+          Conectando vidas, transformando comunidades, construindo um futuro melhor
+        </p>
+      </div>
+    </header>
+
+    <nav aria-label="Navegação principal">
+      <button
+        type="button"
+        id="botao-menu"
+        class="menu-hamburguer"
+        aria-expanded="false"
+        aria-controls="menu-principal"
+      >☰ Menu</button>
+
+      <ul class="menu" id="menu-principal">
+        <li><a href="#/">Início</a></li>
+        <li class="tem-submenu">
+          <a href="#/projetos">Projetos ▾</a>
+          <ul class="submenu">
+            <li><a href="#/projetos/educacao-para-todos">Educação para Todos</a></li>
+            <li><a href="#/projetos/clinica-solidaria">Clínica Solidária</a></li>
+            <li><a href="#/projetos/capacitacao-profissional">Capacitação Profissional</a></li>
+            <li><a href="#/projetos/comunidade-sustentavel">Comunidade Sustentável</a></li>
+          </ul>
+        </li>
+        <li><a href="#/cadastro">Cadastro</a></li>
+        <li><a href="#/voluntarios">Voluntários</a></li>
+        <li><a href="#/componentes">Componentes</a></li>
+      </ul>
+    </nav>
+
+    <main id="conteudo">
+      <!-- O roteador injeta a view desta rota aqui dentro. -->
+      <div id="app" class="container">
+        <noscript>
+          <section>
+            <h2>JavaScript desativado</h2>
+            <p>
+              Esta versão do site é uma Single Page Application: ative o JavaScript
+              no navegador para navegar entre as telas.
+            </p>
+          </section>
+        </noscript>
+      </div>
+    </main>
+
+    <!-- Regiões fixas usadas pelos componentes de feedback -->
+    <div id="regiao-toasts" class="toasts" aria-live="polite" aria-atomic="false"></div>
+    <div id="regiao-modal"></div>
+
+    <footer>
+      <div class="container">
+        <p>
+          © 2024 Conecta Solidária - Todos os direitos reservados. |
+          <a href="#/componentes">Componentes</a> |
+          <a href="#/voluntarios">Voluntários</a>
+        </p>
+        <p>Desenvolvido com ❤️ para o terceiro setor</p>
+      </div>
+    </footer>
+
+    <!-- Núcleo: utilitários, templates, armazenamento e rotas -->
+    <script src="js/nucleo/dom.js"></script>
+    <script src="js/nucleo/templates.js"></script>
+    <script src="js/nucleo/store.js"></script>
+    <script src="js/nucleo/router.js"></script>
+
+    <!-- Dados e regras de negócio -->
+    <script src="js/dados/projetos.js"></script>
+    <script src="js/formularios/validacao.js"></script>
+    <script src="js/formularios/mascaras.js"></script>
+    <script src="js/servicos/voluntarios.js"></script>
+
+    <!-- Componentes de interface -->
+    <script src="js/ui/parciais.js"></script>
+    <script src="js/ui/notificacoes.js"></script>
+    <script src="js/ui/modal.js"></script>
+    <script src="js/ui/menu.js"></script>
+
+    <!-- Telas -->
+    <script src="js/views/inicio.js"></script>
+    <script src="js/views/projetos.js"></script>
+    <script src="js/views/projeto-detalhe.js"></script>
+    <script src="js/views/cadastro.js"></script>
+    <script src="js/views/voluntarios.js"></script>
+    <script src="js/views/componentes.js"></script>
+    <script src="js/views/nao-encontrada.js"></script>
+
+    <!-- Inicialização -->
+    <script src="js/app.js"></script>
+  </body>
+</html>

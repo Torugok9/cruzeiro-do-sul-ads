@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Testes automatizados | Conecta Solidária</title>
+  <style>
+    body { font-family: "Segoe UI", Tahoma, sans-serif; margin: 0; padding: 20px; background: #f9f9f9; color: #333; }
+    h1 { font-size: 1.5rem; color: #667eea; }
+    .aviso { background: #fff8e1; border-left: 5px solid #f9a825; padding: 10px 20px; border-radius: 8px; }
+    #resultado { background: #fff; border-radius: 8px; padding: 20px; box-shadow: 0 2px 4px rgba(0,0,0,.1); white-space: pre-wrap; }
+    iframe { width: 100%; height: 500px; border: 1px solid #ccc; border-radius: 8px; background: #fff; }
+  </style>
+</head>
+<body>
+<h1>Testes automatizados da SPA</h1>
+<p class="aviso">
+  Esta página carrega o <code>index.html</code> em um iframe e simula o uso real:
+  navegação entre rotas, filtros, validação, gravação no localStorage e componentes.
+  <strong>Atenção:</strong> a execução apaga os cadastros salvos neste navegador.
+  Precisa de um servidor local (o navegador bloqueia iframes em <code>file://</code>).
+</p>
+<pre id="resultado">executando...</pre>
+<iframe id="palco" src="index.html" title="Aplicação em teste"></iframe>
+<script>
+const saida = [];
+let falhas = 0;
+
+function ok(condicao, nome, extra) {
+  if (condicao) { saida.push('PASS  ' + nome); }
+  else { falhas++; saida.push('FALHA ' + nome + (extra ? '  -> ' + extra : '')); }
+}
+const dormir = (ms) => new Promise(r => setTimeout(r, ms));
+
+function digitar(doc, id, valor) {
+  const campo = doc.getElementById(id);
+  campo.value = valor;
+  campo.dispatchEvent(new doc.defaultView.Event('input', { bubbles: true }));
+  campo.dispatchEvent(new doc.defaultView.Event('change', { bubbles: true }));
+  return campo;
+}
+
+function clicar(el) { el.dispatchEvent(new MouseEvent('click', { bubbles: true })); }
+
+async function irPara(win, rota) {
+  win.location.hash = rota;
+  await dormir(120);
+}
+
+window.addEventListener('load', async () => {
+  const frame = document.getElementById('palco');
+  const win = frame.contentWindow;
+  const doc = frame.contentDocument;
+  try {
+    win.localStorage.clear();
+
+    // ---------- 1. rota inicial ----------
+    await irPara(win, '#/');
+    ok(doc.querySelector('#quem-somos h2').textContent === 'Quem Somos', '1 rota / renderiza Início');
+    ok(doc.querySelectorAll('#projetos-destaque .projeto-card').length === 3, '1 três cards em destaque');
+
+    // ---------- 2. projetos: filtro e busca ----------
+    await irPara(win, '#/projetos');
+    ok(doc.querySelectorAll('#lista-projetos .projeto-card').length === 4, '2 lista com 4 projetos');
+    clicar(doc.querySelector('.filtro[data-area="saude"]'));
+    await dormir(50);
+    ok(doc.querySelectorAll('#lista-projetos .projeto-card').length === 1, '2 filtro por área');
+    ok(doc.querySelector('#contador-projetos').textContent.indexOf('1 de 4') > -1, '2 contador atualiza');
+    clicar(doc.querySelector('.filtro[data-area="todas"]'));
+    digitar(doc, 'busca-projetos', 'horta');
+    await dormir(500);
+    ok(doc.querySelectorAll('#lista-projetos .projeto-card').length === 1, '2 busca por texto');
+    digitar(doc, 'busca-projetos', 'zzzz');
+    await dormir(500);
+    ok(!!doc.querySelector('#lista-projetos .alerta--info'), '2 estado vazio da busca');
+
+    // ---------- 3. rota com parâmetro e 404 ----------
+    await irPara(win, '#/projetos/clinica-solidaria');
+    ok(doc.querySelector('#app h2').textContent.indexOf('Clínica Solidária') > -1, '3 rota /projetos/:id');
+    ok(doc.title.indexOf('Clínica Solidária') === 0, '3 título da aba', doc.title);
+    await irPara(win, '#/rota-que-nao-existe');
+    ok(doc.querySelector('#app h2').textContent === 'Página não encontrada', '3 rota 404');
+
+    // ---------- 4. formulário vazio ----------
+    await irPara(win, '#/cadastro');
+    const form = doc.getElementById('formulario-voluntario');
+    form.querySelector('button[type="submit"]').click();
+    await dormir(80);
+    ok(!!doc.querySelector('#resumo-erros .alerta--erro'), '4 resumo de erros aparece');
+    ok(doc.querySelectorAll('.campo--erro').length >= 10, '4 campos marcados com erro',
+      doc.querySelectorAll('.campo--erro').length);
+    ok(!!doc.querySelector('#regiao-toasts .toast--erro'), '4 toast de erro');
+    ok(doc.querySelector('#erro-nome').textContent.length > 0, '4 mensagem no campo nome');
+
+    // ---------- 5. máscaras e validação campo a campo ----------
+    digitar(doc, 'cpf', '11144477735');
+    ok(doc.getElementById('cpf').value === '111.444.777-35', '5 máscara de CPF',
+      doc.getElementById('cpf').value);
+    digitar(doc, 'telefone', '11988887777');
+    ok(doc.getElementById('telefone').value === '(11) 98888-7777', '5 máscara de telefone',
+      doc.getElementById('telefone').value);
+    digitar(doc, 'cep', '01310100');
+    ok(doc.getElementById('cep').value === '01310-100', '5 máscara de CEP');
+
+    digitar(doc, 'nome', 'Maria');
+    doc.getElementById('nome').dispatchEvent(new win.FocusEvent('focusout', { bubbles: true }));
+    await dormir(30);
+    ok(doc.querySelector('[data-campo="nome"]').classList.contains('campo--erro'),
+      '5 nome sem sobrenome é inválido');
+    digitar(doc, 'nome', 'Maria da Silva');
+    doc.getElementById('nome').dispatchEvent(new win.FocusEvent('focusout', { bubbles: true }));
+    await dormir(30);
+    ok(doc.querySelector('[data-campo="nome"]').classList.contains('campo--ok'), '5 nome válido');
+
+    digitar(doc, 'email', 'maria.silva');
+    doc.getElementById('email').dispatchEvent(new win.FocusEvent('focusout', { bubbles: true }));
+    await dormir(30);
+    ok(doc.getElementById('erro-email').textContent.length > 0, '5 e-mail inválido');
+    digitar(doc, 'email', 'maria@email.com');
+
+    digitar(doc, 'nascimento', '2015-01-01');
+    doc.getElementById('nascimento').dispatchEvent(new win.FocusEvent('focusout', { bubbles: true }));
+    await dormir(30);
+    ok(doc.getElementById('erro-nascimento').textContent.indexOf('16') > -1, '5 idade mínima',
+      doc.getElementById('erro-nascimento').textContent);
+    digitar(doc, 'nascimento', '1998-05-20');
+
+    digitar(doc, 'mensagem', 'Quero ajudar!');
+    ok(doc.getElementById('contador-mensagem').textContent === '13/500 caracteres',
+      '5 contador do textarea', doc.getElementById('contador-mensagem').textContent);
+
+    // ---------- 6. rascunho no localStorage ----------
+    await dormir(1200);
+    const rascunho = JSON.parse(win.localStorage.getItem('conecta:rascunho-cadastro') || 'null');
+    ok(rascunho && rascunho.valores.nome === 'Maria da Silva', '6 rascunho salvo no localStorage');
+
+    // ---------- 7. envio válido ----------
+    digitar(doc, 'endereco', 'Avenida Paulista');
+    digitar(doc, 'numero', '1000');
+    digitar(doc, 'cidade', 'São Paulo');
+    digitar(doc, 'estado', 'SP');
+    digitar(doc, 'disponibilidade', 'fim-de-semana');
+    const radio = form.querySelector('input[name="area"][value="educacao"]');
+    radio.checked = true;
+    radio.dispatchEvent(new win.Event('change', { bubbles: true }));
+    const aceite = doc.getElementById('consentimento');
+    aceite.checked = true;
+    aceite.dispatchEvent(new win.Event('change', { bubbles: true }));
+
+    form.querySelector('button[type="submit"]').click();
+    await dormir(200);
+
+    const salvos = JSON.parse(win.localStorage.getItem('conecta:voluntarios') || '[]');
+    ok(salvos.length === 1 && salvos[0].nome === 'Maria da Silva', '7 voluntário salvo',
+      JSON.stringify(salvos));
+    ok(win.location.hash === '#/voluntarios', '7 redirecionou para a lista', win.location.hash);
+    ok(!!doc.querySelector('#regiao-toasts .toast--sucesso'), '7 toast de sucesso');
+    ok(win.localStorage.getItem('conecta:rascunho-cadastro') === null, '7 rascunho limpo');
+    ok(doc.querySelectorAll('#lista-voluntarios .voluntario').length === 1, '7 card na lista');
+    ok(doc.querySelector('.voluntario .badge').textContent === 'Educação', '7 badge da área');
+
+    // ---------- 8. busca e filtro na lista ----------
+    digitar(doc, 'busca-voluntarios', 'joao');
+    await dormir(500);
+    ok(!!doc.querySelector('#lista-voluntarios .alerta--aviso'), '8 busca sem resultado');
+    digitar(doc, 'busca-voluntarios', 'maria');
+    await dormir(500);
+    ok(doc.querySelectorAll('#lista-voluntarios .voluntario').length === 1, '8 busca com resultado');
+    digitar(doc, 'filtro-area', 'saude');
+    await dormir(80);
+    ok(!!doc.querySelector('#lista-voluntarios .alerta--aviso'), '8 filtro por área');
+    digitar(doc, 'filtro-area', 'todas');
+    await dormir(80);
+
+    // ---------- 9. CPF duplicado ----------
+    await irPara(win, '#/cadastro');
+    const form2 = doc.getElementById('formulario-voluntario');
+    digitar(doc, 'nome', 'Joao Pereira');
+    digitar(doc, 'email', 'joao@email.com');
+    digitar(doc, 'cpf', '11144477735');
+    digitar(doc, 'nascimento', '1990-02-10');
+    digitar(doc, 'telefone', '11977776666');
+    digitar(doc, 'cep', '01310100');
+    digitar(doc, 'endereco', 'Rua A');
+    digitar(doc, 'numero', '10');
+    digitar(doc, 'cidade', 'Santos');
+    digitar(doc, 'estado', 'SP');
+    digitar(doc, 'disponibilidade', 'remoto');
+    const radio2 = form2.querySelector('input[name="area"][value="saude"]');
+    radio2.checked = true;
+    radio2.dispatchEvent(new win.Event('change', { bubbles: true }));
+    const aceite2 = doc.getElementById('consentimento');
+    aceite2.checked = true;
+    aceite2.dispatchEvent(new win.Event('change', { bubbles: true }));
+    form2.querySelector('button[type="submit"]').click();
+    await dormir(150);
+    ok(doc.getElementById('erro-cpf').textContent.indexOf('já está cadastrado') > -1,
+      '9 bloqueia CPF duplicado', doc.getElementById('erro-cpf').textContent);
+    ok(JSON.parse(win.localStorage.getItem('conecta:voluntarios')).length === 1, '9 nada foi salvo');
+
+    // ---------- 10. rascunho restaurado ----------
+    await dormir(1200);
+    await irPara(win, '#/');
+    await irPara(win, '#/cadastro');
+    ok(!!doc.querySelector('#aviso-rascunho .alerta--info'), '10 aviso de rascunho restaurado');
+    ok(doc.getElementById('nome').value === 'Joao Pereira', '10 campos repreenchidos',
+      doc.getElementById('nome').value);
+    clicar(doc.querySelector('[data-acao="descartar-rascunho"]'));
+    await dormir(150);
+    ok(doc.getElementById('nome').value === '', '10 descartar limpa o formulário');
+    ok(win.localStorage.getItem('conecta:rascunho-cadastro') === null, '10 rascunho apagado');
+
+    // ---------- 11. remoção com modal ----------
+    await irPara(win, '#/voluntarios');
+    clicar(doc.querySelector('[data-acao="remover"]'));
+    await dormir(120);
+    ok(!!doc.querySelector('#regiao-modal .modal--aberto'), '11 modal de confirmação abre');
+    clicar(doc.querySelector('#regiao-modal [data-acao="cancelar"]'));
+    await dormir(400);
+    ok(!doc.querySelector('#regiao-modal .modal'), '11 cancelar fecha o modal');
+    ok(JSON.parse(win.localStorage.getItem('conecta:voluntarios')).length === 1, '11 cancelar não remove');
+
+    clicar(doc.querySelector('[data-acao="remover"]'));
+    await dormir(120);
+    clicar(doc.querySelector('#regiao-modal [data-acao="confirmar"]'));
+    await dormir(200);
+    ok(JSON.parse(win.localStorage.getItem('conecta:voluntarios')).length === 0, '11 confirmar remove');
+    ok(!!doc.querySelector('#lista-voluntarios .alerta--info'), '11 estado vazio da lista');
+
+    // ---------- 12. componentes interativos ----------
+    await irPara(win, '#/componentes');
+    clicar(doc.querySelector('[data-alerta="sucesso"]'));
+    await dormir(50);
+    ok(!!doc.querySelector('#area-alerta .alerta--sucesso'), '12 alerta gerado por clique');
+    const antes = doc.querySelectorAll('#regiao-toasts .toast').length;
+    clicar(doc.querySelector('[data-toast="aviso"]'));
+    await dormir(50);
+    ok(doc.querySelectorAll('#regiao-toasts .toast').length === antes + 1, '12 toast empilhado');
+    clicar(doc.querySelector('[data-acao="abrir-modal"]'));
+    await dormir(120);
+    ok(!!doc.querySelector('#regiao-modal .modal--aberto'), '12 modal do UI kit');
+    doc.dispatchEvent(new win.KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+    await dormir(400);
+    ok(!doc.querySelector('#regiao-modal .modal'), '12 Esc fecha o modal');
+
+    // ---------- 13. menu ----------
+    const botaoMenu = doc.getElementById('botao-menu');
+    clicar(botaoMenu);
+    await dormir(50);
+    ok(doc.getElementById('menu-principal').classList.contains('menu--aberto'), '13 menu abre');
+    ok(botaoMenu.getAttribute('aria-expanded') === 'true', '13 aria-expanded');
+    await irPara(win, '#/');
+    ok(!doc.getElementById('menu-principal').classList.contains('menu--aberto'),
+      '13 menu fecha ao navegar');
+
+    // ---------- 14. escape de HTML no template ----------
+    win.App.Servicos.Voluntarios.salvar({
+      nome: '<img src=x onerror=alert(1)>', email: 'x@x.com', cpf: '111.444.777-35',
+      telefone: '(11) 98888-7777', cidade: 'SP', estado: 'SP', area: 'renda',
+      disponibilidade: 'remoto'
+    });
+    await irPara(win, '#/voluntarios');
+    ok(!doc.querySelector('#lista-voluntarios img'), '14 template escapa HTML do usuário');
+    win.localStorage.clear();
+  } catch (erro) {
+    falhas++;
+    saida.push('EXCEÇÃO: ' + erro.message + '\n' + erro.stack);
+  }
+
+  saida.push('---');
+  saida.push(falhas === 0 ? 'TUDO PASSOU (' + saida.length + ' checagens)' : falhas + ' FALHA(S)');
+  document.getElementById('resultado').textContent = saida.join('\n');
+});
+</script>
+</body>
+</html>
