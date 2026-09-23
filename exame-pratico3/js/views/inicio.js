@@ -18,11 +18,7 @@ App.Views.Inicio = (function () {
     return '' +
       '<section id="quem-somos">' +
         '<h2>Quem Somos</h2>' +
-        '<picture>' +
-          '<source srcset="img/equipe-voluntarios.webp" type="image/webp">' +
-          '<img src="img/equipe-voluntarios.jpg" class="imagem-secao"' +
-            ' alt="Equipe de voluntários da Conecta Solidária reunida em uma ação comunitária">' +
-        '</picture>' +
+        App.Parciais.imagem(App.Dados.imagens.equipe, { prioritaria: true }) +
         '<p>' +
           'A Conecta Solidária é uma ONG do terceiro setor que promove impacto social em ' +
           'comunidades carentes, atuando em três pilares: <strong>educação, saúde e geração ' +

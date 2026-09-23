@@ -59,6 +59,18 @@ window.addEventListener('load', async () => {
     ok(doc.querySelector('#quem-somos h2').textContent === 'Quem Somos', '1 rota / renderiza Início');
     ok(doc.querySelectorAll('#projetos-destaque .projeto-card').length === 3, '1 três cards em destaque');
 
+    // ---------- 1b. imagem responsiva ----------
+    const foto = doc.querySelector('#quem-somos picture img');
+    const fonteWebp = doc.querySelector('#quem-somos picture source[type="image/webp"]');
+    ok(fonteWebp && fonteWebp.getAttribute('srcset').indexOf('-600.webp 600w') > -1, '1b WebP com srcset de 600px');
+    ok(foto.getAttribute('width') === '1200' && foto.getAttribute('height') === '797', '1b dimensões reservadas');
+    ok(foto.getAttribute('loading') === 'eager' && foto.getAttribute('fetchpriority') === 'high',
+      '1b imagem do topo com prioridade');
+    ok(win.App.Parciais.imagem(win.App.Dados.imagens.educacao).indexOf('loading="lazy"') > -1,
+      '1b lazy loading por padrão');
+    await dormir(500);
+    ok(foto.complete && foto.naturalWidth > 0, '1b imagem carregou', foto.currentSrc);
+
     // ---------- 2. projetos: filtro e busca ----------
     await irPara(win, '#/projetos');
     ok(doc.querySelectorAll('#lista-projetos .projeto-card').length === 4, '2 lista com 4 projetos');

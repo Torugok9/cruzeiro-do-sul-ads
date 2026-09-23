@@ -64,9 +64,39 @@ window.App = window.App || {};
       '<span class="estatistica__rotulo">{{ rotulo }}</span>' +
     '</div>');
 
+  /* Imagem responsiva: WebP com fallback JPEG, duas larguras
+     (srcset + sizes) e dimensões fixas para reservar o espaço. */
+  App.Templates.registrar('imagem-responsiva',
+    '<picture>' +
+      '<source type="image/webp"' +
+        ' srcset="{{ arquivo }}-600.webp 600w, {{ arquivo }}.webp {{ largura }}w"' +
+        ' sizes="{{ tamanhos }}">' +
+      '<img src="{{ arquivo }}.jpg"' +
+        ' srcset="{{ arquivo }}-600.jpg 600w, {{ arquivo }}.jpg {{ largura }}w"' +
+        ' sizes="{{ tamanhos }}"' +
+        ' width="{{ largura }}" height="{{ altura }}"' +
+        ' loading="{{ carregamento }}" decoding="async" fetchpriority="{{ prioridade }}"' +
+        ' alt="{{ alt }}" class="imagem-secao">' +
+    '</picture>');
+
+  /* A imagem ocupa a largura do .container (máx. 1200px - 40px de padding). */
+  var TAMANHOS_SECAO = '(max-width: 1200px) calc(100vw - 40px), 1160px';
+
   /* Atalhos com valores padrão, para as views não repetirem
      campos opcionais em toda chamada. */
   App.Parciais = {
+    /* Por padrão a imagem é carregada sob demanda (lazy). Imagens
+       no topo da tela passam { prioritaria: true }: carregam na
+       hora e com prioridade, pois são o maior elemento visível. */
+    imagem: function (imagem, opcoes) {
+      var prioritaria = Boolean(opcoes && opcoes.prioritaria);
+      return App.Templates.usar('imagem-responsiva', Object.assign({}, imagem, {
+        tamanhos: TAMANHOS_SECAO,
+        carregamento: prioritaria ? 'eager' : 'lazy',
+        prioridade: prioritaria ? 'high' : 'auto'
+      }));
+    },
+
     cardProjeto: function (projeto) {
       return App.Templates.usar('card-projeto', Object.assign({}, projeto, {
         rotuloArea: App.Dados.rotuloArea(projeto.area)
