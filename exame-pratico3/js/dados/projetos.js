@@ -13,6 +13,25 @@ App.Dados.areas = [
   { valor: 'meio-ambiente', rotulo: 'Meio ambiente' }
 ];
 
+/* Catálogo de imagens. Cada imagem existe em WebP e JPEG
+   (fallback) e em duas larguras (600 e 1200 px), para o
+   navegador baixar só o tamanho de que precisa. A largura e a
+   altura originais evitam o salto de layout ao carregar. */
+App.Dados.imagens = {
+  equipe: {
+    arquivo: 'img/equipe-voluntarios',
+    largura: 1200,
+    altura: 797,
+    alt: 'Equipe de voluntários da Conecta Solidária reunida em uma ação comunitária'
+  },
+  educacao: {
+    arquivo: 'img/projeto-educacao',
+    largura: 1200,
+    altura: 847,
+    alt: 'Crianças participando de aula de reforço escolar'
+  }
+};
+
 App.Dados.projetos = [
   {
     id: 'educacao-para-todos',
@@ -25,11 +44,7 @@ App.Dados.projetos = [
       'As turmas acontecem no contraturno, em espaços cedidos por escolas e associações de bairro, sempre com acompanhamento pedagógico.'
     ],
     objetivo: 'Ampliar o acesso à educação e reduzir a evasão escolar.',
-    imagem: {
-      webp: 'img/projeto-educacao.webp',
-      jpg: 'img/projeto-educacao.jpg',
-      alt: 'Crianças participando de aula de reforço escolar'
-    },
+    imagem: App.Dados.imagens.educacao,
     voluntarios: 42,
     atendidos: 380,
     desde: 2018
@@ -45,11 +60,7 @@ App.Dados.projetos = [
       'Contamos com profissionais voluntários das áreas de clínica geral, enfermagem, nutrição e psicologia.'
     ],
     objetivo: 'Levar informação e cuidado para quem mais precisa.',
-    imagem: {
-      webp: 'img/equipe-voluntarios.webp',
-      jpg: 'img/equipe-voluntarios.jpg',
-      alt: 'Equipe de voluntários da Conecta Solidária reunida em uma ação comunitária'
-    },
+    imagem: App.Dados.imagens.equipe,
     voluntarios: 27,
     atendidos: 1200,
     desde: 2019
@@ -65,11 +76,7 @@ App.Dados.projetos = [
       'Ao final de cada turma, conectamos os participantes a empresas parceiras que oferecem vagas e estágios.'
     ],
     objetivo: 'Estimular a autonomia e a geração de renda.',
-    imagem: {
-      webp: 'img/equipe-voluntarios.webp',
-      jpg: 'img/equipe-voluntarios.jpg',
-      alt: 'Equipe de voluntários da Conecta Solidária reunida em uma ação comunitária'
-    },
+    imagem: App.Dados.imagens.equipe,
     voluntarios: 18,
     atendidos: 260,
     desde: 2020
@@ -85,11 +92,7 @@ App.Dados.projetos = [
       'Parte do que é colhido nas hortas abastece as famílias participantes e cozinhas solidárias do bairro.'
     ],
     objetivo: 'Incentivar práticas sustentáveis no dia a dia.',
-    imagem: {
-      webp: 'img/equipe-voluntarios.webp',
-      jpg: 'img/equipe-voluntarios.jpg',
-      alt: 'Equipe de voluntários da Conecta Solidária reunida em uma ação comunitária'
-    },
+    imagem: App.Dados.imagens.equipe,
     voluntarios: 15,
     atendidos: 140,
     desde: 2021

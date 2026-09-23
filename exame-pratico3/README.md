@@ -77,7 +77,7 @@ mantém a ordem de carregamento explícita no `index.html`.
 | Framework JavaScript | Mini-framework próprio: roteador + sistema de templates + camada de serviços |
 | Comportamento de aplicação real | Rascunho automático, CPF duplicado bloqueado, confirmação antes de apagar, feedback por toast |
 | Código reutilizável | Parciais de template, regras de validação combináveis e serviços compartilhados |
-| Testar e corrigir erros | `testes.html` com 52 verificações automatizadas |
+| Testar e corrigir erros | `testes.html` com 57 verificações automatizadas |
 
 ## Validação do formulário
 
@@ -110,6 +110,22 @@ Erros encontrados no código anterior e corrigidos aqui:
 4. O modal dependia de `:target`, o que sujava a URL e não fechava com Esc.
 5. No breakpoint de 480px, a regra `.btn, button { width: 100% }` esticava também
    os botões pequenos, como o de fechar notificação.
+
+## Imagens
+
+Cada imagem existe em **WebP** (formato principal) e **JPEG** (fallback), em duas
+larguras: 600 px e 1200 px. O parcial `App.Parciais.imagem` gera o `<picture>` com:
+
+- `srcset` + `sizes`: o navegador baixa só a largura de que precisa;
+- `width` e `height`: reservam o espaço e evitam o salto de layout;
+- `loading="lazy"` por padrão; imagens no topo da tela usam `eager` e
+  `fetchpriority="high"`, porque são o maior elemento visível;
+- `decoding="async"` e texto alternativo em `alt`.
+
+| Imagem | JPEG 1200 | WebP 1200 | WebP 600 |
+|---|---|---|---|
+| equipe-voluntarios | 116 KB | 100 KB | 21 KB |
+| projeto-educacao | 73 KB | 54 KB | 11 KB |
 
 ## Testes
 

@@ -34,10 +34,7 @@ App.Views.ProjetoDetalhe = (function () {
         '<p class="migalhas"><a href="#/projetos">← Voltar para os projetos</a></p>' +
         '<h2>{{ emoji }} {{ titulo }}</h2>' +
         '<span class="badge badge--{{ area }}">{{ rotuloArea }}</span>' +
-        '<picture>' +
-          '<source srcset="{{ imagem.webp }}" type="image/webp">' +
-          '<img src="{{ imagem.jpg }}" alt="{{ imagem.alt }}" class="imagem-secao">' +
-        '</picture>' +
+        '{{& foto }}' +
         '{{& paragrafos }}' +
         '<p><strong>Objetivo:</strong> {{ objetivo }}</p>' +
         '<div class="estatisticas">' +
@@ -50,6 +47,7 @@ App.Views.ProjetoDetalhe = (function () {
       Object.assign({}, projeto, {
         rotuloArea: App.Dados.rotuloArea(projeto.area),
         paragrafos: paragrafos,
+        foto: App.Parciais.imagem(projeto.imagem, { prioritaria: true }),
         estatisticas:
           App.Parciais.estatistica(projeto.voluntarios, 'voluntários na equipe') +
           App.Parciais.estatistica(projeto.atendidos.toLocaleString('pt-BR'), 'pessoas atendidas') +
